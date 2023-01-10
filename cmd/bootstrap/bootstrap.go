@@ -39,10 +39,10 @@ func Run() {
 
 	select {
 	case s := <-signals:
-		log.Info("Service received signal ", "type", s.String())
+		log.Info("Service received signal ", "type ", s.String())
 		break
 	case err := <-errors:
-		log.Error("An error occurred while starting ", "error", err.Error())
+		log.Error("An error occurred while starting ", "error ", err.Error())
 		break
 	}
 	log.Info("Server is shutting down now")
