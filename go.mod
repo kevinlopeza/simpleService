@@ -3,6 +3,7 @@ module simpleService
 go 1.18
 
 require (
+	github.com/google/go-cmp v0.5.9
 	github.com/sirupsen/logrus v1.9.0
 )
 

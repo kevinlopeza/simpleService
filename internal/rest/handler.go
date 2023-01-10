@@ -5,15 +5,18 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"simpleService/internal"
-	"simpleService/internal/process"
+	"simpleService/internal/cache"
 	"time"
 )
 
+// handler implements the http.Handler interface
 type handler struct {
-	cache process.Cache
+	cache cache.Cache
 }
 
-func NewHandler(c process.Cache) http.Handler {
+// NewHandler is a constructor to inject a cache implementation to
+// a handler struct
+func NewHandler(c cache.Cache) http.Handler {
 	return &handler{
 		cache: c,
 	}
@@ -28,6 +31,7 @@ func (h handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if holidayType == "" || beginDateParam == "" || endDateParam == "" {
 		log.Info("Empty query param detected")
 		h.closeResponse(writer, http.StatusBadRequest, nil)
+		return
 	}
 
 	// Parse query params to dates
@@ -48,9 +52,13 @@ func (h handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	h.closeResponse(writer, http.StatusOK, result)
 }
 
-func (h handler) closeResponse(writer http.ResponseWriter, HTTPStatus int, result []*process.Holiday) {
+func (h handler) closeResponse(writer http.ResponseWriter, HTTPStatus int, result []*cache.Holiday) {
 
 	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	if HTTPStatus != http.StatusOK {
+		writer.WriteHeader(HTTPStatus)
+	}
 
 	err := json.NewEncoder(writer).Encode(result)
 
@@ -59,7 +67,4 @@ func (h handler) closeResponse(writer http.ResponseWriter, HTTPStatus int, resul
 		return
 	}
 
-	if HTTPStatus != http.StatusOK {
-		writer.WriteHeader(HTTPStatus)
-	}
 }

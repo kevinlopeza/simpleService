@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"simpleService/internal/process"
+	"simpleService/internal/cache"
 	"simpleService/internal/rest"
 	"syscall"
 )
@@ -14,7 +14,7 @@ import (
 func Run() {
 	port := "90"
 
-	cacheImpl, _ := process.NewCacheImpl()
+	cacheImpl, _ := cache.NewCacheImpl()
 	handler := rest.NewHandler(cacheImpl)
 
 	mux := http.NewServeMux()
